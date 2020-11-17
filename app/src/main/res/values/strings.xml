@@ -7,6 +7,21 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+    <!-- Strings used for login and register fragment -->
+    <string name="user">Usuario</string>
+    <string name="pass">Contraseña</string>
+    <string name="confpass">Confirmar contraseña</string>
+    <string name="email">Correo electronico</string>
+    <string name="noacc">¿No tienes una cuenta? </string>
+    <string name="register">Registrate!</string>
+    <string name="enter">Entrar</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="usersingup">Registro de usuario</string>
+
+    <!-- common strings -->
+    <string name="back">Regresar</string>
+    <string name="placeholder">placeholder</string>
+
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>

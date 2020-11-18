@@ -19,6 +19,11 @@
     <string name="login">Iniciar sesión</string>
     <string name="usersingup">Registro de usuario</string>
 
+    <!-- Strings used for main navigation -->
+    <string name="title_map">Mapa</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
     <!-- common strings -->
     <string name="back">Regresar</string>
     <string name="placeholder">placeholder</string>
@@ -26,6 +31,4 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
 </resources>

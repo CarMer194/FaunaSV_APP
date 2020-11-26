@@ -4,6 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -24,14 +29,36 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mdpustudio.faunasv.models.Avistamiento;
 
+import java.util.List;
 import java.util.Objects;
 
 public class MapFragment extends Fragment {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    //esta sera la url "base" en donde esta alojada nuestra API
+    public static final String BASE_URL = "https://faunaelsalvador.herokuapp.com/";
 
     private boolean permissionDenied = false;
+
+    //creamos el gsonbuilder para darle formato a nuestra fecha
+    Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+            .create();
+
+    //creamos nuestro objeto de retrofit, le enviamos la url donde esta nuestra API y el converterFactory que usaremos para obtener la info de los JSON
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build();
+
+    //se crea el objeto de nuestra interfaz, que es en donde accederemos a todas las funcionalidades de la API
+    EndpointInterface apiService = retrofit.create(EndpointInterface.class);
 
     private GoogleMap map;
 
@@ -55,6 +82,7 @@ public class MapFragment extends Fragment {
             map.setMinZoomPreference(8.0f);
             map.setMaxZoomPreference(21.0f);
 
+            showAllAvistamientos();
 
             /*LatLng sydney = new LatLng(-34, 151);
             googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -62,6 +90,46 @@ public class MapFragment extends Fragment {
             enableMyLocation();
         }
     };
+
+    private void showAllAvistamientos(){
+        //obtenemos todos los avistamientos desde nuestra api
+        Call<List<Avistamiento>> avistamientos = apiService.getAvistamientos();
+
+        //utilizamos el enqueue para que no se haga en el main thread ya que podria crashear la app
+        avistamientos.enqueue(new Callback<List<Avistamiento>>() {
+            @Override
+            public void onResponse(Call<List<Avistamiento>> call, Response<List<Avistamiento>> response) {      //success response
+
+                //se verifica que el response fue exitoso verdaderamente
+                if (!response.isSuccessful()){
+                    Toast.makeText(getActivity(), "Fallo el response"+ response.code(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                //obtenemos la lista de objetos JAVA que la API retorno
+                List<Avistamiento> avistResult = response.body();
+
+                //empezamos a mostrar todos los markers de avistamientos en el mapa
+                for (int i=0; i<avistResult.size();i++){
+                    String geom = avistResult.get(i).getGeom();                                                //obtenemos el string de la geometria
+                    String[] dataStr = geom.split("\\(");                                               //partimos el string para obtener solo la latitud y longitud
+                    String geoData = dataStr[1].substring(0,dataStr[1].length() -1);                           //borramos el parentesis del final
+                    String[] latLong = geoData.split(" ");
+
+                    LatLng marker = new LatLng(Double.parseDouble(latLong[1]), Double.parseDouble(latLong[0])); //hacemos un objeto que tendra la informacion de la latitud y longitud
+                    map.addMarker(new MarkerOptions()                                                           //creamos el marcador en el mapa, le enviamos la position y el titulo que debe de tener
+                            .position(marker)
+                            .title(avistResult.get(i).getDescripcion()+""));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Avistamiento>> call, Throwable t) {                                 //fail response
+                Toast.makeText(getActivity(), "Hubo un error con la API "+t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
 
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -99,6 +167,15 @@ public class MapFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        FloatingActionButton addAvistamineto = getActivity().findViewById(R.id.add_avistamiento_button);
+        addAvistamineto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(), "Agregar Avistamiento", Toast.LENGTH_LONG).show();
+            }
+        });
+
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {

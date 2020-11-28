@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ShowListFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#fafafa"
+    android:id="@+id/list_fragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -97,13 +99,22 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/submit_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:text="@string/buttonfilter"
+        android:background="@drawable/button_round_primary_dark"/>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/filter_list_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:scrollbars="vertical"
-        android:padding="8dp"/>
+        android:padding="8dp"
+        android:layout_marginBottom="55dp"/>
 
 
 </LinearLayout>

@@ -30,6 +30,23 @@
     <string name="distance">Distancia (en Km)</string>
     <string name="animalname">Nombre del animal</string>
     <string name="speciesname">Nombre de la especie</string>
+    <string name="buttonfilter">Filtrar</string>
+
+    <!--Strings for the cardview-->
+    <string name="cardusername">Username</string>
+    <string name="carddescription">Description</string>
+    <string name="cardimage">Image</string>
+    <string name="cardanimal">Animal name</string>
+    <string name="cardviewinfo">Ver más</string>
+    
+    <!--Strings for the info fragment-->
+    <string name="infoanimalname">Animal:</string>
+    <string name="infodesc">Descripción:</string>
+    <string name="infouser">Avistamiento por </string>
+    <string name="infocords">Coordenadas: </string>
+    <string name="infoedit">Editar</string>
+    <string name="infomap">Mapa</string>
+
 
     <!-- common strings -->
     <string name="back">Regresar</string>
@@ -38,4 +55,6 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment.</string>
     <string name="title_activity_main">MainActivity</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

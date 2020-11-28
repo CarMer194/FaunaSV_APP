@@ -2,8 +2,10 @@ package com.mdpustudio.faunasv;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,7 +29,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -61,6 +65,9 @@ public class MapFragment extends Fragment {
     EndpointInterface apiService = retrofit.create(EndpointInterface.class);
 
     private GoogleMap map;
+    Avistamiento currentAvist;
+    Boolean flag = false;
+    CoordinatorLayout mapcontainer;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -82,11 +89,11 @@ public class MapFragment extends Fragment {
             map.setMinZoomPreference(8.0f);
             map.setMaxZoomPreference(21.0f);
 
-            showAllAvistamientos();
-
-            /*LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
+            if (flag){
+                showAvistamiento(currentAvist);
+            }else {
+                showAllAvistamientos();
+            }
             enableMyLocation();
         }
     };
@@ -119,8 +126,32 @@ public class MapFragment extends Fragment {
                     LatLng marker = new LatLng(Double.parseDouble(latLong[1]), Double.parseDouble(latLong[0])); //hacemos un objeto que tendra la informacion de la latitud y longitud
                     map.addMarker(new MarkerOptions()                                                           //creamos el marcador en el mapa, le enviamos la position y el titulo que debe de tener
                             .position(marker)
-                            .title(avistResult.get(i).getDescripcion()+""));
+                            .draggable(true)
+                            .title(avistResult.get(i).getAnimal()+"")
+                            .snippet(avistResult.get(i).getUsuario()));
                 }
+                map.setOnInfoWindowLongClickListener(new GoogleMap.OnInfoWindowLongClickListener() {
+                    @Override
+                    public void onInfoWindowLongClick(Marker marker) {
+                        for (int i=0; i<avistResult.size();i++){
+                            String geom = avistResult.get(i).getGeom();                                                //obtenemos el string de la geometria
+                            String[] dataStr = geom.split("\\(");                                               //partimos el string para obtener solo la latitud y longitud
+                            String geoData = dataStr[1].substring(0,dataStr[1].length() -1);                           //borramos el parentesis del final
+                            String[] latLong = geoData.split(" ");
+
+                            LatLng pos = new LatLng(Double.parseDouble(latLong[1]), Double.parseDouble(latLong[0])); //hacemos un objeto que tendra la informacion de la latitud y longitud
+                            if (marker.getTitle().equals(avistResult.get(i).getAnimal()) && marker.getPosition().equals(pos)){
+                                Bundle bundle = new Bundle();
+                                bundle.putSerializable("object", avistResult.get(i));
+                                getActivity().getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.nav_host_fragment, InfoFragment.class, bundle)
+                                        .addToBackStack(null)
+                                        .commit();
+                                mapcontainer.setVisibility(View.GONE);
+                            }
+                        }
+                    }
+                });
             }
 
             @Override
@@ -129,6 +160,36 @@ public class MapFragment extends Fragment {
             }
         });
 
+    }
+
+    public void showAvistamiento(Avistamiento item){
+        String geom = item.getGeom();                                                               //obtenemos el string de la geometria
+        String[] dataStr = geom.split("\\(");                                                //partimos el string para obtener solo la latitud y longitud
+        String geoData = dataStr[1].substring(0,dataStr[1].length() -1);                            //borramos el parentesis del final
+        String[] latLong = geoData.split(" ");
+
+        LatLng marker = new LatLng(Double.parseDouble(latLong[1]), Double.parseDouble(latLong[0])); //hacemos un objeto que tendra la informacion de la latitud y longitud
+        map.addMarker(new MarkerOptions()                                                           //creamos el marcador en el mapa, le enviamos la position y el titulo que debe de tener
+                .position(marker)
+                .draggable(true)
+                .title(item.getAnimal())
+                .snippet(item.getUsuario()));
+        map.moveCamera(CameraUpdateFactory.newLatLng(marker));
+        map.moveCamera(CameraUpdateFactory.zoomTo(14.0F));
+
+        map.setOnInfoWindowLongClickListener(new GoogleMap.OnInfoWindowLongClickListener() {
+            @Override
+            public void onInfoWindowLongClick(Marker marker) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("object", item);
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.nav_host_fragment, InfoFragment.class, bundle)
+                        .addToBackStack(null)
+                        .commit();
+                mapcontainer.setVisibility(View.GONE);
+
+            }
+        });
     }
 
     private void enableMyLocation() {
@@ -143,7 +204,9 @@ public class MapFragment extends Fragment {
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
                 LatLng currentLocation = new LatLng(latitude, longitude);
-                map.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+                if (!flag) {
+                    map.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+                }
 
 
 
@@ -152,7 +215,7 @@ public class MapFragment extends Fragment {
             /* Permission to access the location is missing. Show rationale and request permission
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, true);*/
-            Toast.makeText(getActivity(), "nel prrito", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Permiso incorrecto", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -161,18 +224,30 @@ public class MapFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_map, container, false);
+        View root = inflater.inflate(R.layout.fragment_map, container, false);
+        mapcontainer = root.findViewById(R.id.mapcontainer);
+        return root;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Bundle arguments = getArguments();
+        if (arguments != null && arguments.containsKey("objectCoords")){
+            flag = true;
+            currentAvist = (Avistamiento) requireArguments().getSerializable("objectCoords");
+        }
         super.onViewCreated(view, savedInstanceState);
 
-        FloatingActionButton addAvistamineto = getActivity().findViewById(R.id.add_avistamiento_button);
+        SharedViewModel model = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        model.getSelected().observe(getViewLifecycleOwner(), this::showAvistamiento);
+
+        FloatingActionButton addAvistamineto = getActivity().findViewById(R.id.resetMapButton);
         addAvistamineto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Agregar Avistamiento", Toast.LENGTH_LONG).show();
+                map.clear();
+                map.moveCamera(CameraUpdateFactory.zoomTo(8.0F));
+                showAllAvistamientos();
             }
         });
 
@@ -182,4 +257,5 @@ public class MapFragment extends Fragment {
             mapFragment.getMapAsync(callback);
         }
     }
+
 }

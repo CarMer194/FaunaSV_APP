@@ -1,8 +1,9 @@
 package com.mdpustudio.faunasv.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Avistamiento {
+public class Avistamiento implements Serializable {
 
     private int id_avistamiento;
     private String geom;
@@ -11,7 +12,7 @@ public class Avistamiento {
     private String fotografia;
     private String descripcion;
     private String usuario;
-    private int animal;
+    private String animal;
 
 
     public int getId_avistamiento() {
@@ -70,12 +71,11 @@ public class Avistamiento {
         this.usuario = usuario;
     }
 
-
-    public int getAnimal() {
+    public String getAnimal() {
         return animal;
     }
 
-    public void setAnimal(int animal) {
+    public void setAnimal(String animal) {
         this.animal = animal;
     }
 }

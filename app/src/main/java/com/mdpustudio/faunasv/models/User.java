@@ -2,22 +2,22 @@ package com.mdpustudio.faunasv.models;
 
 public class User {
 
-    private int id;
+    //private int id;
     private String username;
-    private String email;
-    private String first_name;
-    private String last_name;
+    //private String email;
+    //private String first_name;
+    //private String last_name;
     private String password;
 
 
-    public int getId() {
+    /*public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
-
+*/
     public String getUsername() {
         return username;
     }
@@ -25,7 +25,7 @@ public class User {
     public void setUsername(String username) {
         this.username = username;
     }
-
+/*
     public String getEmail() {
         return email;
     }
@@ -49,7 +49,7 @@ public class User {
     public void setLast_name(String last_name) {
         this.last_name = last_name;
     }
-
+*/
     public String getPassword() {
         return password;
     }

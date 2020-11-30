@@ -1,18 +1,28 @@
 package com.mdpustudio.faunasv;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mdpustudio.faunasv.models.Avistamiento;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -31,6 +41,8 @@ public class InfoFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
+    public static final String BASE_URL = "https://faunaelsalvador.herokuapp.com/";
+
     private String mParam1;
     private String mParam2;
     private Avistamiento avist;
@@ -39,8 +51,16 @@ public class InfoFragment extends Fragment {
     TextView desc;
     TextView user;
     TextView date;
+    TextView distance;
     Button mapButton;
     Button editButton;
+    ImageView animalImage;
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+    EndpointInterface apiService = retrofit.create(EndpointInterface.class);
+
 
 
     public InfoFragment() {
@@ -91,8 +111,10 @@ public class InfoFragment extends Fragment {
         desc = view.findViewById(R.id.info_desc_textview);
         user = view.findViewById(R.id.info_user_textview);
         date = view.findViewById(R.id.info_date_textview);
+        distance = view.findViewById(R.id.info_distance_textview);
         mapButton = view.findViewById(R.id.button_map);
         editButton = view.findViewById(R.id.button_edit);
+        animalImage = view.findViewById(R.id.info_imageview);
 
         editButton.setVisibility(View.GONE);
 
@@ -101,6 +123,30 @@ public class InfoFragment extends Fragment {
         desc.setText(avist.getDescripcion());
         user.setText(avist.getUsuario());
         date.setText(getDateAvist(avist.getFecha_hora()));
+        new ImageLoad(avist.getFotografia(),animalImage).execute();
+
+        String test = getActivity().getPreferences(Context.MODE_PRIVATE).getString("LocationPoint", null);
+
+        Call<Double> distanceMt = apiService.getDistanceByPoints(avist.getGeom(), test);
+        distanceMt.enqueue(new Callback<Double>() {
+            @Override
+            public void onResponse(@NotNull Call<Double> call, @NotNull Response<Double> response) {
+                if (!response.isSuccessful()){
+                    Toast.makeText(getActivity(), "Fallo el response "+ response.code(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                double mt = response.body();
+                int intvalue = (int)mt;
+                String resultado = intvalue+"m";
+                distance.setText(resultado);
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<Double> call, @NotNull Throwable t) {
+                Toast.makeText(getActivity(), "Error "+ t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         Bundle bundle = new Bundle();
         bundle.putSerializable("objectCoords", avist);

@@ -33,7 +33,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mdpustudio.faunasv.models.Avistamiento;
-import com.mdpustudio.faunasv.ui.dashboard.DashboardViewModel;
 
 import java.util.List;
 
@@ -133,6 +132,7 @@ public class ShowListFragment extends Fragment implements RecyclerViewClickInter
             }
         });
     }
+
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {

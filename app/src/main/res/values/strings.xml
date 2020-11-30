@@ -46,7 +46,13 @@
     <string name="infocords">Coordenadas: </string>
     <string name="infoedit">Editar</string>
     <string name="infomap">Mapa</string>
+    <string name="infodistance">Distancia: </string>
 
+    <!--Strings for the add fragment-->
+    <string name="addpicture">Agregar imagen</string>
+    <string name="addanimalname">Buscar animal:</string>
+    <string name="addanimalbutton">Buscar</string>
+    <string name="addavistamiento">Agregar avistamiento</string>
 
     <!-- common strings -->
     <string name="back">Regresar</string>

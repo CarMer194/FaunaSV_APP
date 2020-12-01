@@ -53,9 +53,6 @@ public interface EndpointInterface {
     @POST("api/token/")
     Call<Token> getToken(@Body User user);
 
-    //@POST("expertos/")
-    //Call<Experto> addExperto(@Header("Authorization") String token, @Body Experto experto);
-
     //endpoint para obtener a todos los animales por un nombre en especifico
     @GET("animal/")
     Call<List<Animal>> getAnimalesByName(@Query("search") String animal);

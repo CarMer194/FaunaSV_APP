@@ -53,6 +53,7 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //se les asigna a los objetos sus respectivas views
         userTextField = view.findViewById(R.id.userTextField);
         passTextField = view.findViewById(R.id.passTextField);
 

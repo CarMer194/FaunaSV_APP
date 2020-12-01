@@ -27,7 +27,7 @@
 
     <!--Strings for the list fragment -->
     <string name="filter">Filtrar:</string>
-    <string name="distance">Distancia (en Km)</string>
+    <string name="distance">Distancia (en m)</string>
     <string name="animalname">Nombre del animal</string>
     <string name="username">Nombre de usuario</string>
     <string name="buttonfilter">Filtrar</string>

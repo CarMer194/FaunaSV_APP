@@ -10,6 +10,7 @@ import android.view.MenuItem;
 
 public class LoginActivity extends AppCompatActivity {
 
+    //actividad contenedora de nuestro FirstFragment, que es la pantalla de login y SecondFragment que es la pantalla de registro
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

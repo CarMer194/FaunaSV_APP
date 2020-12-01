@@ -2,21 +2,21 @@ package com.mdpustudio.faunasv.models;
 
 public class Experto {
 
-    private int id_experto;
+    //private int id_experto;
     private String nombre_experto;
     private String apellido_experto;
     private String institucion_experto;
     private String identificacion_experto;
-    private String usuario;
+    //private String usuario;
 
 
-    public int getId_experto() {
+    /*public int getId_experto() {
         return id_experto;
     }
 
     public void setId_experto(int id_experto) {
         this.id_experto = id_experto;
-    }
+    }*/
 
     public String getNombre_experto() {
         return nombre_experto;
@@ -49,12 +49,12 @@ public class Experto {
     public void setIdentificacion_experto(String identificacion_experto) {
         this.identificacion_experto = identificacion_experto;
     }
-
+/*
     public String getUsuario() {
         return usuario;
     }
 
     public void setUsuario(String usuario) {
         this.usuario = usuario;
-    }
+    }*/
 }

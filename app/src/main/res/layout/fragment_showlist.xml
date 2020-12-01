@@ -46,9 +46,9 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_text_filter_distance"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+                android:layout_height="wrap_content"/>
 
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
@@ -68,6 +68,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_text_filter_animal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
@@ -85,12 +86,13 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/speciesname"
+            android:hint="@string/username"
             android:paddingHorizontal="8dp"
             android:paddingVertical="2dp"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_text_filter_usuario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />

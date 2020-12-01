@@ -4,7 +4,6 @@
         <item>Ningun filtro seleccionado</item>
         <item>Distancia</item>
         <item>Animal</item>
-        <item>Especie</item>
-        <item>Custom</item>
+        <item>Usuario</item>
     </string-array>
 </resources>

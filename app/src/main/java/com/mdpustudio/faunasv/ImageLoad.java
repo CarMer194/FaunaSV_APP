@@ -21,13 +21,18 @@ public class ImageLoad extends AsyncTask<Void, Void, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(Void... voids) {
+        //se hace en el metodo de doInBackground ya que si se hace en el main thread puede trabar la app.
         try {
+            //creamos nuestro objeto URL
             URL urlConnection = new URL(url);
+            //creamos la connection de nuestra url
             HttpURLConnection connection = (HttpURLConnection) urlConnection
                     .openConnection();
             connection.setDoInput(true);
             connection.connect();
+            //obtenemos el input stream de nuestra imagen
             InputStream input = connection.getInputStream();
+            //hacemos un decode de nuestro inputstream para pasarlo a bitmap y poder utilizarlo en las imageview
             Bitmap myBitmap = BitmapFactory.decodeStream(input);
             return myBitmap;
         } catch (Exception e) {
@@ -39,6 +44,7 @@ public class ImageLoad extends AsyncTask<Void, Void, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         super.onPostExecute(bitmap);
+        //se pone la imagen en el imageView
         imageView.setImageBitmap(bitmap);
     }
 }

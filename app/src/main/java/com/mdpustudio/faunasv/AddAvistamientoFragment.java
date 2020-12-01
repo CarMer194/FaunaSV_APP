@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 import com.mdpustudio.faunasv.models.Animal;
 import com.mdpustudio.faunasv.models.Avistamiento;
+import com.mdpustudio.faunasv.models.Experto;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -62,11 +63,16 @@ public class AddAvistamientoFragment extends Fragment {
     TextInputEditText descTxt;
 
     Bitmap imageBitmap;
+
+    //objeto Retrofit que nos permitira conectarnos con la API, a este se le envia la URL de nuestra API y con que herramienta usaremos para consumir los Json, en este caso sera Gson
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
+
+    //creame nuestro objeto de la interface que se conectara con la API y la igualamos a nuestro objeto retrofit.
     EndpointInterface apiService = retrofit.create(EndpointInterface.class);
+
     String location;
     String selectedAnimal;
     String token;
@@ -75,11 +81,14 @@ public class AddAvistamientoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
+        //obtenemos las strings "globales" para nuestra locacion y el token de login, que se han guardado en el SharedPreferences.
         location = getActivity().getPreferences(Context.MODE_PRIVATE).getString("LocationPoint", null);
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         token = getActivity().getPreferences(Context.MODE_PRIVATE).getString("token", null);
 
         View root = inflater.inflate(R.layout.fragment_addavistamiento, container, false);
+
+        //igualamos nuestros objetos a sus respectivas views
         addImage = root.findViewById(R.id.addimage_button);
         filterAnimal = root.findViewById(R.id.buscar_animal_button);
         searchAnimal = root.findViewById(R.id.search_animal_edittex);
@@ -88,6 +97,7 @@ public class AddAvistamientoFragment extends Fragment {
         addAvist = root.findViewById(R.id.addavistamiento_button);
         descTxt = root.findViewById(R.id.add_avist_desc);
 
+        //ocultamos la lista hasta que se utilice
         listAnimal.setVisibility(View.GONE);
 
         addImage.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +110,7 @@ public class AddAvistamientoFragment extends Fragment {
         filterAnimal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Call<List<Animal>> filterAnimales = apiService.getAnimalesByName(searchAnimal.getText().toString());
                 filterAnimales.enqueue(new Callback<List<Animal>>() {
                     @Override
@@ -167,27 +178,29 @@ public class AddAvistamientoFragment extends Fragment {
     }
 
     public void tryToAddAvist(){
+
         //confirmado
         Boolean confirmado = false;
         //fecha_hora
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'_'HH:mm:ss");
         Date date = new Date();
         String dateString = formatter.format(date);
         //fotografia
         MediaType media = MediaType.parse("image/png");
-        File file = bitmapToFile(imageBitmap, dateString+"_image.png");
+        File file = bitmapToFile(imageBitmap, dateString+"_image.jpg");
         RequestBody requestBody = RequestBody.create(media, file);
         //descripcion
         String description = String.valueOf(descTxt.getText());
         //token
-        String responseToken = "Token "+token;
+        String responseToken = "Bearer "+token;
 
-        Call<Avistamiento> addAvistamiento = apiService.addAvistamiento(responseToken, location, confirmado, dateString, requestBody, description, selectedAnimal);
+        Call<Avistamiento> addAvistamiento = apiService.addAvistamiento(responseToken, location, String.valueOf(confirmado), dateString, requestBody, description, selectedAnimal);
         addAvistamiento.enqueue(new Callback<Avistamiento>() {
             @Override
             public void onResponse(Call<Avistamiento> call, Response<Avistamiento> response) {
                 if (!response.isSuccessful()){
-                    Toast.makeText(getActivity(), "Fallo el response "+ response.code(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Fallo el response "+ response.code() + " " + response.message(), Toast.LENGTH_LONG).show();
+
                     return;
                 }
 
@@ -201,6 +214,38 @@ public class AddAvistamientoFragment extends Fragment {
             }
         });
 
+        /*
+        Experto test = new Experto();
+        test.setNombre_experto("alex");
+        test.setApellido_experto("rivera");
+        test.setIdentificacion_experto("awebo soy experto");
+        test.setInstitucion_experto("mi kcita");
+        String responseToken = "Bearer "+token;
+
+
+        Call<Experto> addExperto = apiService.addExperto(responseToken, test);
+        addExperto.enqueue(new Callback<Experto>() {
+            @Override
+            public void onResponse(Call<Experto> call, Response<Experto> response) {
+                if (!response.isSuccessful()){
+                    Toast.makeText(getActivity(), "Fallo el response "+ response.code() + " " + response.message() + " "+response.headers(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Toast.makeText(getActivity(), "funciono?", Toast.LENGTH_LONG).show();
+
+
+            }
+
+
+
+            @Override
+            public void onFailure(Call<Experto> call, Throwable t) {
+                Toast.makeText(getActivity(), "Error: "+ t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });*/
+
+        //72104057
 
     }
 
@@ -213,7 +258,7 @@ public class AddAvistamientoFragment extends Fragment {
 
             //Convert bitmap to byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 0 , bos); // YOU can also save it in JPEG
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 0 , bos); // YOU can also save it in JPEG
             byte[] bitmapdata = bos.toByteArray();
 
             //write the bytes in file

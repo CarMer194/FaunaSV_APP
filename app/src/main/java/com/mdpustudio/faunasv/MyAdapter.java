@@ -15,11 +15,14 @@ import java.util.List;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+//este es el adaptador para el recyclerview
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     List<Avistamiento> avist;
+    //creamos una interface del recyclerview para que este se pueda comunicar con el fragmento
     private static RecyclerViewClickInterface recyclerViewClickInterface;
 
+    //creamos el constructor
     public MyAdapter(List<Avistamiento> avist, RecyclerViewClickInterface recyclerViewClickInterface){
         this.avist = avist;
         this.recyclerViewClickInterface = recyclerViewClickInterface;
@@ -34,6 +37,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        //seteamos el texto indicado a cada TextView
         holder.animalName.setText(avist.get(position).getAnimal());
         holder.animalDesc.setText(avist.get(position).getDescripcion());
         new ImageLoad(avist.get(position).getFotografia(), holder.avistPhoto).execute();
@@ -51,6 +55,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        //creamos los objetos de nuestras views
         CardView cv;
         TextView animalName;
         TextView animalDesc;
@@ -59,12 +64,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         public ViewHolder(View itemView) {
             super(itemView);
+            //ligamos nuestros objetos a sus respectivas views
             cv = (CardView)itemView.findViewById(R.id.cardview_item);
             animalName = (TextView)itemView.findViewById(R.id.filter_animalname_textview);
             animalDesc = (TextView)itemView.findViewById(R.id.filter_animaldesc_textview);
             username = (TextView)itemView.findViewById(R.id.filter_user_textview);
             avistPhoto = (ImageView)itemView.findViewById(R.id.filter_image);
 
+            //creamos el click listener en cada elemento para que se pueda obtener su position
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -72,6 +79,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 }
             });
 
+            //creamos el long click listener en cada elemento para que se pueda obtener su position
             itemView.setOnLongClickListener((view) -> {
 
                 recyclerViewClickInterface.onLongItemClick(getAdapterPosition());

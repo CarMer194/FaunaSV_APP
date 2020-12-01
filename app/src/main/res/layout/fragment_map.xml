@@ -18,13 +18,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:src="@drawable/add"
+        android:src="@drawable/distance"
+        android:contentDescription="@string/placeholder"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="210dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/resetMapButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/map"
         android:contentDescription="@string/placeholder"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="140dp"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/resetMapButton"
+        android:id="@+id/addAvistButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"

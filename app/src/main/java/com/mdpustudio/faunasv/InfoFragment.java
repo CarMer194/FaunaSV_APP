@@ -55,10 +55,14 @@ public class InfoFragment extends Fragment {
     Button mapButton;
     Button editButton;
     ImageView animalImage;
+
+    //objeto Retrofit que nos permitira conectarnos con la API, a este se le envia la URL de nuestra API y con que herramienta usaremos para consumir los Json, en este caso sera Gson
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
+
+    //creame nuestro objeto de la interface que se conectara con la API y la igualamos a nuestro objeto retrofit.
     EndpointInterface apiService = retrofit.create(EndpointInterface.class);
 
 
@@ -103,9 +107,11 @@ public class InfoFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        //Se obtiene el objeto de avistamiento que se envio desde otro fragmento o actividad
         avist = (Avistamiento) requireArguments().getSerializable("object");
         super.onViewCreated(view, savedInstanceState);
 
+        //asignamos a nuestras variables sus view correspondientes
         animalName = view.findViewById(R.id.info_animalname_textview);
         coords = view.findViewById(R.id.info_coords_textview);
         desc = view.findViewById(R.id.info_desc_textview);
@@ -118,41 +124,52 @@ public class InfoFragment extends Fragment {
 
         editButton.setVisibility(View.GONE);
 
+        //se setea la informacion correspondiente a cada textview
         animalName.setText(avist.getAnimal());
         coords.setText(getCoords(avist.getGeom()));
         desc.setText(avist.getDescripcion());
         user.setText(avist.getUsuario());
         date.setText(getDateAvist(avist.getFecha_hora()));
+        //cargamos nuestra imagen desde una URL en el API, le enviamos el String de la URL y el ImageView en donde queremos colocar nuestra imagen
         new ImageLoad(avist.getFotografia(),animalImage).execute();
 
-        String test = getActivity().getPreferences(Context.MODE_PRIVATE).getString("LocationPoint", null);
+        //obtenemos la locacion actual con las shared preferences
+        String location = getActivity().getPreferences(Context.MODE_PRIVATE).getString("LocationPoint", null);
 
-        Call<Double> distanceMt = apiService.getDistanceByPoints(avist.getGeom(), test);
+        //Usamos el objeto Call para poder hacer un enqueue del endpoint que queremos utilizar, en este caso encontrar la distancia de un punto a otro
+        Call<Double> distanceMt = apiService.getDistanceByPoints(avist.getGeom(), location);
+        //hacemos un enqueue de nuestro objeto call para que no corre en el main thread, ya que podria crashear la app
         distanceMt.enqueue(new Callback<Double>() {
             @Override
-            public void onResponse(@NotNull Call<Double> call, @NotNull Response<Double> response) {
-                if (!response.isSuccessful()){
+            public void onResponse(@NotNull Call<Double> call, @NotNull Response<Double> response) {    //response success
+                if (!response.isSuccessful()){  //verificamos si el response fue un response successful
                     Toast.makeText(getActivity(), "Fallo el response "+ response.code(), Toast.LENGTH_LONG).show();
-                    return;
+                    return; //si el response falla mostramos el codigo de error y retornamos
                 }
 
+                //obtenemos la distancia con el response.body()
                 double mt = response.body();
+                //pasamos el double a int para solo mostrar el valor entero
                 int intvalue = (int)mt;
+                //seteamos el resultado de la distancia en metros
                 String resultado = intvalue+"m";
                 distance.setText(resultado);
             }
 
             @Override
-            public void onFailure(@NotNull Call<Double> call, @NotNull Throwable t) {
+            public void onFailure(@NotNull Call<Double> call, @NotNull Throwable t) {                   //response fail
                 Toast.makeText(getActivity(), "Error "+ t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
+        //se crea un objeto Bundle para poder enviar informacion extra, en este caso las coordenadas del objeto seleccionado para que se muestren en el mapa
         Bundle bundle = new Bundle();
         bundle.putSerializable("objectCoords", avist);
+        //se hace el click listener para ver el punto en el mapa
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //se cambia de fragmento y se pone la informacion extra de la locacion
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.nav_host_fragment, MapFragment.class, bundle)
                         .addToBackStack(null)
@@ -162,15 +179,15 @@ public class InfoFragment extends Fragment {
 
     }
 
+    //metodo para poder obtener las coordenadas de una manera entendible para el usuario
     public String getCoords(String st){
         String[] dataStr = st.split("\\(");
         String geoData = dataStr[1].substring(0,dataStr[1].length() -1);
         String[] latLong = geoData.split(" ");
         return latLong[1]+" "+latLong[0];
-
-
     }
 
+    //metodo para poder obtener el formato de fecha correcto para mostrarlo en el textview
     public String getDateAvist(Date date){
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         return dateFormat.format(date);

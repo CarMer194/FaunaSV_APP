@@ -22,14 +22,14 @@
 
     <!-- Strings used for main navigation -->
     <string name="title_map">Mapa</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_dashboard">Lista</string>
     <string name="title_notifications">Notifications</string>
 
     <!--Strings for the list fragment -->
     <string name="filter">Filtrar:</string>
     <string name="distance">Distancia (en Km)</string>
     <string name="animalname">Nombre del animal</string>
-    <string name="speciesname">Nombre de la especie</string>
+    <string name="username">Nombre de usuario</string>
     <string name="buttonfilter">Filtrar</string>
 
     <!--Strings for the cardview-->

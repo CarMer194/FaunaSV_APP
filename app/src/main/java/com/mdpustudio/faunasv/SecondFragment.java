@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+//aca iba a estar el registro
 public class SecondFragment extends Fragment {
 
     @Override

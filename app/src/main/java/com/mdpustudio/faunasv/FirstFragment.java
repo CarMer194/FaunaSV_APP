@@ -29,6 +29,9 @@ public class FirstFragment extends Fragment {
     //creamos la URL en donde esta alojado nuestro API
     public static final String BASE_URL = "https://faunaelsalvador.herokuapp.com/";
 
+    TextInputEditText userTextField;
+    TextInputEditText passTextField;
+
     //objeto Retrofit que nos permitira conectarnos con la API, a este se le envia la URL de nuestra API y con que herramienta usaremos para consumir los Json, en este caso sera Gson
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -50,6 +53,9 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        userTextField = view.findViewById(R.id.userTextField);
+        passTextField = view.findViewById(R.id.passTextField);
+
         //click listener que nos enviara al fragmento de registro.
         view.findViewById(R.id.button_register).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,8 +71,8 @@ public class FirstFragment extends Fragment {
             public void onClick(View view) {
 
                 User user = new User();
-                user.setUsername("alexander");
-                user.setPassword("cris1234");
+                user.setUsername(String.valueOf(userTextField.getText()));
+                user.setPassword(String.valueOf(passTextField.getText()));
 
                 //usamos el call con un objeto, el objeto sera del tipo que la api retorne, para poder hacerle un enqueue.
                 Call<Token> token = apiInterface.getToken(user);
@@ -76,7 +82,7 @@ public class FirstFragment extends Fragment {
                     public void onResponse(Call<Token> call, Response<Token> response) {    //api envio un response
                         //verificamos si el response que la API envio fue successful
                         if (!response.isSuccessful()){
-                            Toast.makeText(getActivity(), "Fallo el response "+ response.code(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Datos incorrectos", Toast.LENGTH_LONG).show();
                             return; //si el api no fue successful se imprime el codigo de error y se retorna.
                         }
 
